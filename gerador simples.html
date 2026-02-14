@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Sensi - Perfis e Famosos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 20%, #1a1f2e, #0b0e14);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .glass-card {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(18, 22, 33, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 48px;
+            padding: 40px 36px;
+            box-shadow: 0 30px 60px -20px #000000, 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+        }
+
+        h1 {
+            font-size: 3.4rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #b3abff, #ff9ce4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .subhead {
+            text-align: center;
+            color: #8a92a9;
+            font-size: 1.2rem;
+            margin-bottom: 24px;
+            border-bottom: 1px dashed #2b3142;
+            padding-bottom: 20px;
+        }
+
+        /* Abas: Meus Perfis / Famosos */
+        .tab-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(12, 16, 26, 0.7);
+            padding: 8px;
+            border-radius: 60px;
+            max-width: 400px;
+            border: 1px solid #2d3445;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 10px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: #7b85a1;
+            transition: 0.2s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #5f5cf0, #b75ae9);
+            color: white;
+            box-shadow: 0 4px 12px -4px #8a6de0;
+        }
+
+        /* Conteúdo das abas */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active-content {
+            display: block;
+        }
+
+        /* Barra de perfis (Meus Perfis) */
+        .profiles-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 30px;
+            background: rgba(12, 16, 26, 0.7);
+            padding: 12px 20px;
+            border-radius: 60px;
+            border: 1px solid #2d3445;
+        }
+
+        .profiles-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .profile-tag {
+            background: #1e253b;
+            color: #cbd0e0;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid #36405e;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-tag.active {
+            background: linear-gradient(145deg, #5f5cf0, #b75ae9);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 6px 14px -4px #7f6cf0;
+        }
+
+        .profile-tag .delete-profile {
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            line-height: 1;
+            transition: 0.1s;
+        }
+
+        .profile-tag .delete-profile:hover {
+            background: rgba(255,80,80,0.6);
+        }
+
+        .btn-add-profile {
+            background: transparent;
+            border: 1px dashed #5f6b96;
+            color: #a5b3df;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .btn-add-profile:hover {
+            background: #262f4a;
+            border-color: #9f8bf0;
+            color: white;
+        }
+
+        /* Estilo da aba Famosos */
+        .famosos-container {
+            margin: 20px 0 30px;
+        }
+
+        .plataforma-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: #1a2137;
+            border-radius: 50px;
+            padding: 6px;
+            max-width: 300px;
+        }
+
+        .plataforma-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #97a3cf;
+        }
+
+        .plataforma-tab.active {
+            background: #2d3b60;
+            color: white;
+        }
+
+        .jogadores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+        }
+
+        .jogador-card {
+            background: rgba(22, 28, 45, 0.8);
+            border-radius: 30px;
+            padding: 22px 18px;
+            border: 1px solid #2f3853;
+            transition: 0.2s;
+        }
+
+        .jogador-card:hover {
+            border-color: #9f8bf0;
+        }
+
+        .jogador-nome {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #b3abff, #ff9ce4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .botoes-estilo {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-estilo {
+            flex: 1;
+            background: #1e253b;
+            border: 1px solid #3f4b70;
+            border-radius: 40px;
+            padding: 12px 8px;
+            font-weight: 600;
+            color: #cbd0e0;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: center;
+        }
+
+        .btn-estilo:hover {
+            background: #2e3a5a;
+            border-color: #9f8bf0;
+            color: white;
+        }
+
+        .btn-estilo.controle {
+            border-left: 4px solid #4a9eff;
+        }
+        .btn-estilo.capa {
+            border-left: 4px solid #ff6b9d;
+        }
+
+        /* Seletor plataforma (mobile/emulador) */
+        .platform-section {
+            background: rgba(12, 16, 26, 0.7);
+            border-radius: 120px;
+            padding: 8px;
+            display: flex;
+            max-width: 380px;
+            margin: 0 auto 40px auto;
+            border: 1px solid #2d3445;
+        }
+
+        .platform-option {
+            flex: 1;
+            text-align: center;
+            padding: 14px 10px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #7b85a1;
+            user-select: none;
+        }
+
+        .platform-option.active {
+            background: linear-gradient(135deg, #5f5cf0, #b75ae9);
+            color: white;
+            box-shadow: 0 8px 20px -6px #8a6de0;
+        }
+
+        .platform-option:first-child {
+            margin-right: 4px;
+        }
+
+        /* Grid de miras */
+        .miras-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 24px;
+            margin: 40px 0;
+        }
+
+        .mira-card {
+            background: rgba(22, 28, 45, 0.7);
+            border-radius: 32px;
+            padding: 24px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: transform 0.2s, border-color 0.2s;
+            box-shadow: 0 15px 30px -15px #000000;
+        }
+
+        .mira-card:hover {
+            border-color: rgba(160, 140, 255, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .mira-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #e1e7fc;
+        }
+
+        .mira-header span {
+            font-size: 2rem;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            background: #1c2338;
+            border-radius: 60px;
+            padding: 6px 16px 6px 8px;
+            border: 1px solid #2f3853;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .radio-item:hover {
+            background: #262f4a;
+        }
+
+        .radio-item input[type="radio"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #4c5780;
+            border-radius: 50%;
+            margin-right: 14px;
+            position: relative;
+            transition: 0.1s;
+        }
+
+        .radio-item input[type="radio"]:checked {
+            border-color: #9f8bf0;
+            background: #9f8bf0;
+            box-shadow: 0 0 12px #9f8bf0;
+        }
+
+        .radio-item input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .radio-item .label {
+            flex: 1;
+            color: #cbd0e0;
+            font-weight: 500;
+        }
+
+        .radio-item .hint {
+            font-size: 0.8rem;
+            color: #6d779b;
+            background: #2b334d;
+            padding: 4px 10px;
+            border-radius: 30px;
+        }
+
+        /* Seção DPI */
+        .dpi-container {
+            background: rgba(22, 28, 45, 0.7);
+            border-radius: 40px;
+            padding: 28px 30px;
+            margin: 20px 0 30px;
+            border: 1px solid #2f3853;
+        }
+
+        .dpi-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .dpi-header input[type="checkbox"] {
+            width: 26px;
+            height: 26px;
+            accent-color: #9f8bf0;
+            cursor: pointer;
+        }
+
+        .dpi-header label {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #f0f3ff;
+            cursor: pointer;
+        }
+
+        .dpi-options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding-left: 42px;
+        }
+
+        .dpi-option {
+            flex: 1 1 150px;
+        }
+
+        .dpi-option input[type="radio"] {
+            display: none;
+        }
+
+        .dpi-option label {
+            display: block;
+            background: #1c2338;
+            border: 1px solid #36405e;
+            border-radius: 60px;
+            padding: 14px 16px;
+            text-align: center;
+            color: #cbd0e0;
+            font-weight: 500;
+            transition: 0.15s;
+            cursor: pointer;
+        }
+
+        .dpi-option input[type="radio"]:checked + label {
+            background: linear-gradient(145deg, #6c5edb, #b45de0);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 8px 18px -6px #a06de0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .btn-generate {
+            background: linear-gradient(145deg, #5f5cf0, #c256e8);
+            border: none;
+            border-radius: 60px;
+            padding: 20px 30px;
+            flex: 2;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 16px 32px -8px #5f5cf0;
+            border: 1px solid rgba(255,255,255,0.1);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-save {
+            background: #1e253b;
+            border: 1px solid #4c5780;
+            border-radius: 60px;
+            padding: 20px 30px;
+            flex: 1;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #cbd0e0;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .btn-save:hover {
+            background: #2a3350;
+            border-color: #9f8bf0;
+            color: white;
+        }
+
+        .btn-generate:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px -4px #7f6cf0;
+        }
+
+        .result-panel {
+            margin-top: 48px;
+            background: rgba(10, 14, 23, 0.8);
+            border-radius: 44px;
+            padding: 36px 32px;
+            border: 1px solid rgba(160, 140, 255, 0.4);
+            display: none;
+            backdrop-filter: blur(8px);
+        }
+
+        .result-panel h2 {
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .result-item {
+            background: #1c2338;
+            border-radius: 28px;
+            padding: 18px 10px;
+            text-align: center;
+            border: 1px solid #343f60;
+        }
+
+        .result-item .cat-name {
+            color: #959ec9;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-item .cat-value {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(145deg, #b3abff, #ffb2e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .result-dpi {
+            text-align: center;
+            color: #b6c1f0;
+            font-size: 1.4rem;
+            border-top: 1px dashed #2f3853;
+            padding-top: 28px;
+        }
+
+        .result-dpi strong {
+            font-size: 2.4rem;
+            background: linear-gradient(145deg, #b3abff, #ffb2e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-left: 12px;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #515c82;
+            margin-top: 32px;
+            font-size: 0.95rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .glass-card {
+                padding: 24px 16px;
+                border-radius: 32px;
+            }
+            h1 {
+                font-size: 2.4rem;
+            }
+            .platform-section {
+                max-width: 100%;
+            }
+            .dpi-options {
+                padding-left: 0;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-card">
+        <h1>SENSE BUILDER</h1>
+        <div class="subhead">Crie seus perfis ou carregue configurações de famosos</div>
+
+        <!-- Abas principais -->
+        <div class="tab-bar">
+            <div class="tab active" data-tab="meus">📁 Meus Perfis</div>
+            <div class="tab" data-tab="famosos">⭐ Famosos</div>
+        </div>
+
+        <!-- Conteúdo: Meus Perfis -->
+        <div id="tabMeus" class="tab-content active-content">
+            <div class="profiles-bar">
+                <div class="profiles-list" id="profilesList"></div>
+                <button class="btn-add-profile" id="addProfileBtn">+ Novo Perfil</button>
+            </div>
+        </div>
+
+        <!-- Conteúdo: Famosos -->
+        <div id="tabFamosos" class="tab-content">
+            <div class="famosos-container">
+                <!-- Abas Mobile / PC dentro de Famosos -->
+                <div class="plataforma-tabs">
+                    <div class="plataforma-tab active" data-plat="mobile">📱 Mobile</div>
+                    <div class="plataforma-tab" data-plat="pc">💻 PC</div>
+                </div>
+
+                <!-- Grid de jogadores Mobile (inicialmente visível) -->
+                <div id="jogadoresMobile" class="jogadores-grid"></div>
+                <!-- Grid de jogadores PC (inicialmente oculto) -->
+                <div id="jogadoresPC" class="jogadores-grid hidden"></div>
+            </div>
+        </div>
+
+        <!-- Seletor Mobile / Emulador (para o formulário ativo) -->
+        <div class="platform-section" id="platformSelector">
+            <div class="platform-option active" data-platform="mobile">📱 Mobile</div>
+            <div class="platform-option" data-platform="emulador">💻 Emulador</div>
+        </div>
+
+        <!-- Formulário de miras -->
+        <form id="sensiForm">
+            <div class="miras-grid">
+                <!-- Geral -->
+                <div class="mira-card">
+                    <div class="mira-header"><span>🎯</span> Geral</div>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="geral" value="baixa" checked>
+                            <span class="label">Baixa</span>
+                            <span class="hint">estável</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="geral" value="media">
+                            <span class="label">Média</span>
+                            <span class="hint">equilibrada</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="geral" value="alta">
+                            <span class="label">Alta</span>
+                            <span class="hint">rápida</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Mira Vermelha -->
+                <div class="mira-card">
+                    <div class="mira-header"><span>🔴</span> Vermelha</div>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="red" value="baixa" checked><span class="label">Baixa</span></label>
+                        <label class="radio-item"><input type="radio" name="red" value="media"><span class="label">Média</span></label>
+                        <label class="radio-item"><input type="radio" name="red" value="alta"><span class="label">Alta</span></label>
+                    </div>
+                </div>
+
+                <!-- Mira 2x -->
+                <div class="mira-card">
+                    <div class="mira-header"><span>2️⃣</span> 2x</div>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="scope2x" value="baixa" checked><span class="label">Baixa</span></label>
+                        <label class="radio-item"><input type="radio" name="scope2x" value="media"><span class="label">Média</span></label>
+                        <label class="radio-item"><input type="radio" name="scope2x" value="alta"><span class="label">Alta</span></label>
+                    </div>
+                </div>
+
+                <!-- Mira 4x -->
+                <div class="mira-card">
+                    <div class="mira-header"><span>4️⃣</span> 4x</div>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="scope4x" value="baixa" checked><span class="label">Baixa</span></label>
+                        <label class="radio-item"><input type="radio" name="scope4x" value="media"><span class="label">Média</span></label>
+                        <label class="radio-item"><input type="radio" name="scope4x" value="alta"><span class="label">Alta</span></label>
+                    </div>
+                </div>
+
+                <!-- Mira AWM -->
+                <div class="mira-card">
+                    <div class="mira-header"><span>🔭</span> AWM</div>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="awm" value="baixa" checked><span class="label">Baixa</span></label>
+                        <label class="radio-item"><input type="radio" name="awm" value="media"><span class="label">Média</span></label>
+                        <label class="radio-item"><input type="radio" name="awm" value="alta"><span class="label">Alta</span></label>
+                    </div>
+                </div>
+
+                <!-- Olhadinha -->
+                <div class="mira-card">
+                    <div class="mira-header"><span>👀</span> Olhadinha</div>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="olhadinha" value="baixa" checked><span class="label">Baixa</span></label>
+                        <label class="radio-item"><input type="radio" name="olhadinha" value="media"><span class="label">Média</span></label>
+                        <label class="radio-item"><input type="radio" name="olhadinha" value="alta"><span class="label">Alta</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloco DPI -->
+            <div class="dpi-container">
+                <div class="dpi-header">
+                    <input type="checkbox" id="dpiToggle">
+                    <label for="dpiToggle">🖱️ Configurar DPI (opcional)</label>
+                </div>
+                <div id="dpiOptionsBlock" class="dpi-options hidden">
+                    <div class="dpi-option">
+                        <input type="radio" name="dpi" id="dpiLow" value="baixa" checked>
+                        <label for="dpiLow">Baixo 300–500</label>
+                    </div>
+                    <div class="dpi-option">
+                        <input type="radio" name="dpi" id="dpiMid" value="media">
+                        <label for="dpiMid">Médio 500–700</label>
+                    </div>
+                    <div class="dpi-option">
+                        <input type="radio" name="dpi" id="dpiHigh" value="alta">
+                        <label for="dpiHigh">Alto 700–900</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn-generate" onclick="gerarConfig()">GERAR SENSIBILIDADES</button>
+                <button type="button" class="btn-save" onclick="salvarPerfilAtual()">💾 Salvar</button>
+            </div>
+        </form>
+
+        <!-- Painel de resultados -->
+        <div id="resultPanel" class="result-panel">
+            <h2>⚡ SUAS CONFIGURAÇÕES ⚡</h2>
+            <div id="resultGrid" class="result-grid"></div>
+            <div id="resultDpi" class="result-dpi" style="display: none;">
+                DPI recomendado: <strong id="dpiDisplay"></strong>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Múltiplos perfis e configurações de famosos
+        </div>
+    </div>
+
+    <script>
+        // --------------------------------------------------------------
+        // GERENCIAMENTO DE PERFIS (localStorage)
+        // --------------------------------------------------------------
+        let perfis = [];
+        let perfilAtualId = null;
+
+        function carregarPerfisStorage() {
+            const stored = localStorage.getItem('sensiProfiles');
+            if (stored) {
+                perfis = JSON.parse(stored);
+            } else {
+                perfis = [
+                    { id: 'default1', nome: 'Perfil Mobile', plataforma: 'mobile', dpiAtivo: false, dpiValor: 'media', miras: {
+                        geral: 'media', red: 'media', scope2x: 'media', scope4x: 'media', awm: 'media', olhadinha: 'media'
+                    } }
+                ];
+            }
+            if (perfis.length > 0 && !perfilAtualId) {
+                perfilAtualId = perfis[0].id;
+            }
+            atualizarListaPerfis();
+            carregarPerfilPorId(perfilAtualId);
+        }
+
+        function salvarPerfisStorage() {
+            localStorage.setItem('sensiProfiles', JSON.stringify(perfis));
+        }
+
+        function atualizarListaPerfis() {
+            const container = document.getElementById('profilesList');
+            container.innerHTML = '';
+            perfis.forEach(p => {
+                const tag = document.createElement('div');
+                tag.className = `profile-tag ${p.id === perfilAtualId ? 'active' : ''}`;
+                tag.setAttribute('data-id', p.id);
+                tag.innerHTML = `${p.nome} <span class="delete-profile" onclick="excluirPerfil('${p.id}', event)">✕</span>`;
+                tag.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('delete-profile')) {
+                        carregarPerfilPorId(p.id);
+                    }
+                });
+                container.appendChild(tag);
+            });
+        }
+
+        document.getElementById('addProfileBtn').addEventListener('click', () => {
+            const nome = prompt('Nome do novo perfil:', 'Meu Perfil');
+            if (!nome) return;
+            const novoId = 'profile_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const novoPerfil = {
+                id: novoId,
+                nome: nome,
+                plataforma: 'mobile',
+                dpiAtivo: false,
+                dpiValor: 'media',
+                miras: {
+                    geral: 'media',
+                    red: 'media',
+                    scope2x: 'media',
+                    scope4x: 'media',
+                    awm: 'media',
+                    olhadinha: 'media'
+                }
+            };
+            perfis.push(novoPerfil);
+            perfilAtualId = novoId;
+            salvarPerfisStorage();
+            atualizarListaPerfis();
+            carregarPerfilPorId(novoId);
+        });
+
+        window.excluirPerfil = (id, event) => {
+            event.stopPropagation();
+            if (perfis.length <= 1) {
+                alert('Não é possível excluir o único perfil.');
+                return;
+            }
+            perfis = perfis.filter(p => p.id !== id);
+            if (perfilAtualId === id) {
+                perfilAtualId = perfis[0].id;
+                carregarPerfilPorId(perfilAtualId);
+            }
+            salvarPerfisStorage();
+            atualizarListaPerfis();
+        };
+
+        function carregarPerfilPorId(id) {
+            const perfil = perfis.find(p => p.id === id);
+            if (!perfil) return;
+            perfilAtualId = id;
+
+            const platformOpts = document.querySelectorAll('.platform-option');
+            platformOpts.forEach(opt => {
+                if (opt.dataset.platform === perfil.plataforma) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+            currentPlatform = perfil.plataforma;
+
+            for (let [categoria, valor] of Object.entries(perfil.miras)) {
+                const radio = document.querySelector(`input[name="${categoria}"][value="${valor}"]`);
+                if (radio) radio.checked = true;
+            }
+
+            const dpiCheck = document.getElementById('dpiToggle');
+            dpiCheck.checked = perfil.dpiAtivo;
+            const dpiBlock = document.getElementById('dpiOptionsBlock');
+            if (perfil.dpiAtivo) {
+                dpiBlock.classList.remove('hidden');
+                const dpiRadio = document.querySelector(`input[name="dpi"][value="${perfil.dpiValor}"]`);
+                if (dpiRadio) dpiRadio.checked = true;
+            } else {
+                dpiBlock.classList.add('hidden');
+            }
+
+            atualizarListaPerfis();
+        }
+
+        window.salvarPerfilAtual = function() {
+            if (!perfilAtualId) return;
+            const perfil = perfis.find(p => p.id === perfilAtualId);
+            if (!perfil) return;
+
+            perfil.plataforma = currentPlatform;
+
+            const categorias = ['geral','red','scope2x','scope4x','awm','olhadinha'];
+            categorias.forEach(cat => {
+                const selecionado = document.querySelector(`input[name="${cat}"]:checked`);
+                if (selecionado) perfil.miras[cat] = selecionado.value;
+            });
+
+            perfil.dpiAtivo = document.getElementById('dpiToggle').checked;
+            if (perfil.dpiAtivo) {
+                const dpiSelecionado = document.querySelector('input[name="dpi"]:checked');
+                if (dpiSelecionado) perfil.dpiValor = dpiSelecionado.value;
+            }
+
+            salvarPerfisStorage();
+            atualizarListaPerfis();
+            alert('Perfil salvo com sucesso!');
+        };
+
+        // --------------------------------------------------------------
+        // LÓGICA DE GERAÇÃO DE SENSIBILIDADE
+        // --------------------------------------------------------------
+        const platformOptions = document.querySelectorAll('.platform-option');
+        let currentPlatform = 'mobile';
+
+        platformOptions.forEach(opt => {
+            opt.addEventListener('click', function() {
+                platformOptions.forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                currentPlatform = this.dataset.platform;
+            });
+        });
+
+        document.getElementById('dpiToggle').addEventListener('change', function() {
+            const block = document.getElementById('dpiOptionsBlock');
+            if (this.checked) {
+                block.classList.remove('hidden');
+            } else {
+                block.classList.add('hidden');
+            }
+        });
+
+        function getBaseSensi(category, preference) {
+            const map = {
+                geral: { baixa: 40, media: 85, alta: 130 },
+                red: { baixa: 35, media: 70, alta: 110 },
+                scope2x: { baixa: 30, media: 60, alta: 95 },
+                scope4x: { baixa: 25, media: 50, alta: 80 },
+                awm: { baixa: 15, media: 35, alta: 60 },
+                olhadinha: { baixa: 55, media: 105, alta: 160 }
+            };
+            return map[category]?.[preference] || 50;
+        }
+
+        window.gerarConfig = function() {
+            const platformFactor = currentPlatform === 'emulador' ? 0.85 : 1.0;
+
+            const categorias = [
+                { id: 'geral', nome: 'Geral', key: 'geral' },
+                { id: 'red', nome: 'Vermelha', key: 'red' },
+                { id: 'scope2x', nome: '2x', key: 'scope2x' },
+                { id: 'scope4x', nome: '4x', key: 'scope4x' },
+                { id: 'awm', nome: 'AWM', key: 'awm' },
+                { id: 'olhadinha', nome: 'Olhadinha', key: 'olhadinha' }
+            ];
+
+            let resultHTML = '';
+
+            categorias.forEach(cat => {
+                const selected = document.querySelector(`input[name="${cat.id}"]:checked`);
+                if (selected) {
+                    const base = getBaseSensi(cat.key, selected.value);
+                    let finalValue = Math.round(base * platformFactor);
+                    finalValue = Math.min(200, Math.max(1, finalValue));
+                    resultHTML += `
+                        <div class="result-item">
+                            <div class="cat-name">${cat.nome}</div>
+                            <div class="cat-value">${finalValue}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('resultGrid').innerHTML = resultHTML;
+
+            const dpiAtivo = document.getElementById('dpiToggle').checked;
+            const dpiResultDiv = document.getElementById('resultDpi');
+
+            if (dpiAtivo) {
+                const dpiSelecionado = document.querySelector('input[name="dpi"]:checked');
+                let dpiFinal = 600;
+                if (dpiSelecionado) {
+                    switch (dpiSelecionado.value) {
+                        case 'baixa': dpiFinal = 400; break;
+                        case 'media': dpiFinal = 600; break;
+                        case 'alta': dpiFinal = 800; break;
+                    }
+                }
+                document.getElementById('dpiDisplay').innerText = dpiFinal;
+                dpiResultDiv.style.display = 'block';
+            } else {
+                dpiResultDiv.style.display = 'none';
+            }
+
+            document.getElementById('resultPanel').style.display = 'block';
+            document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+
+        // --------------------------------------------------------------
+        // ABA FAMOSOS - Dados e funções (CORRIGIDO)
+        // --------------------------------------------------------------
+        const famososData = {
+            mobile: [
+                { nome: 'Nobru', controle: { miras: { geral: 'media', red: 'media', scope2x: 'baixa', scope4x: 'baixa', awm: 'baixa', olhadinha: 'alta' }, dpi: { ativo: true, valor: 'media' } },
+                  capa: { miras: { geral: 'alta', red: 'alta', scope2x: 'media', scope4x: 'media', awm: 'media', olhadinha: 'alta' }, dpi: { ativo: true, valor: 'alta' } } },
+                { nome: 'Coringa', controle: { miras: { geral: 'baixa', red: 'baixa', scope2x: 'baixa', scope4x: 'baixa', awm: 'baixa', olhadinha: 'media' }, dpi: { ativo: false } },
+                  capa: { miras: { geral: 'alta', red: 'alta', scope2x: 'alta', scope4x: 'media', awm: 'media', olhadinha: 'alta' }, dpi: { ativo: true, valor: 'baixa' } } },
+                { nome: 'Bak', controle: { miras: { geral: 'media', red: 'media', scope2x: 'media', scope4x: 'baixa', awm: 'baixa', olhadinha: 'media' }, dpi: { ativo: true, valor: 'media' } },
+                  capa: { miras: { geral: 'alta', red: 'alta', scope2x: 'alta', scope4x: 'alta', awm: 'media', olhadinha: 'alta' }, dpi: { ativo: true, valor: 'alta' } } },
+                { nome: 'Cerol', controle: { miras: { geral: 'baixa', red: 'baixa', scope2x: 'baixa', scope4x: 'baixa', awm: 'baixa', olhadinha: 'baixa' }, dpi: { ativo: false } },
+                  capa: { miras: { geral: 'media', red: 'media', scope2x: 'media', scope4x: 'media', awm: 'media', olhadinha: 'alta' }, dpi: { ativo: true, valor: 'media' } } }
+            ],
+            pc: [
+                { nome: 'Shroud', controle: { miras: { geral: 'baixa', red: 'baixa', scope2x: 'baixa', scope4x: 'baixa', awm: 'baixa', olhadinha: 'media' }, dpi: { ativo: true, valor: 'baixa' } },
+                  capa: { miras: { geral: 'media', red: 'media', scope2x: 'media', scope4x: 'media', awm: 'media', olhadinha: 'alta' }, dpi: { ativo: true, valor: 'media' } } },
+                { nome: 'Simple', controle: { miras: { geral: 'baixa', red: 'baixa', scope2x: 'baixa', scope4x: 'baixa', awm: 'baixa', olhadinha: 'baixa' }, dpi: { ativo: true, valor: 'baixa' } },
+                  capa: { miras: { geral: 'alta', red: 'alta', scope2x: 'media', scope4x: 'media', awm: 'media', olhadinha: 'alta' }, dpi: { ativo: true, valor: 'alta' } } },
+                { nome: 'Fallen', controle: { miras: { geral: 'media', red: 'media', scope2x: 'baixa', scope4x: 'baixa', awm: 'baixa', olhadinha: 'media' }, dpi: { ativo: true, valor: 'media' } },
+                  capa: { miras: { geral: 'alta', red: 'alta', scope2x: 'alta', scope4x: 'media', awm: 'media', olhadinha: 'alta' }, dpi: { ativo: true, valor: 'alta' } } },
+                { nome: 'Coldzera', controle: { miras: { geral: 'baixa', red: 'baixa', scope2x: 'baixa', scope4x: 'baixa', awm: 'baixa', olhadinha: 'media' }, dpi: { ativo: true, valor: 'baixa' } },
+                  capa: { miras: { geral: 'media', red: 'media', scope2x: 'media', scope4x: 'media', awm: 'media', olhadinha: 'alta' }, dpi: { ativo: true, valor: 'media' } } }
+            ]
+        };
+
+        function encontrarJogador(plataforma, nome) {
+            return famososData[plataforma].find(j => j.nome === nome);
+        }
+
+        function carregarFamoso(plataforma, nome, estilo) {
+            const jogador = encontrarJogador(plataforma, nome);
+            if (!jogador) {
+                console.error('Jogador não encontrado');
+                return;
+            }
+
+            const config = jogador[estilo];
+            if (!config) {
+                console.error('Estilo não encontrado');
+                return;
+            }
+
+            // Definir plataforma ativa nos seletores
+            const platformOpts = document.querySelectorAll('.platform-option');
+            const targetPlatform = plataforma === 'pc' ? 'emulador' : 'mobile';
+            platformOpts.forEach(opt => {
+                if (opt.dataset.platform === targetPlatform) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+            currentPlatform = targetPlatform;
+
+            // Carregar miras
+            for (let [categoria, valor] of Object.entries(config.miras)) {
+                const radio = document.querySelector(`input[name="${categoria}"][value="${valor}"]`);
+                if (radio) radio.checked = true;
+            }
+
+            // Carregar DPI
+            const dpiCheck = document.getElementById('dpiToggle');
+            const dpiBlock = document.getElementById('dpiOptionsBlock');
+            if (config.dpi && config.dpi.ativo) {
+                dpiCheck.checked = true;
+                dpiBlock.classList.remove('hidden');
+                const dpiRadio = document.querySelector(`input[name="dpi"][value="${config.dpi.valor}"]`);
+                if (dpiRadio) dpiRadio.checked = true;
+            } else {
+                dpiCheck.checked = false;
+                dpiBlock.classList.add('hidden');
+            }
+
+            // Gerar as sensibilidades automaticamente
+            gerarConfig();
+        }
+
+        function preencherFamosos() {
+            const mobileGrid = document.getElementById('jogadoresMobile');
+            const pcGrid = document.getElementById('jogadoresPC');
+
+            mobileGrid.innerHTML = '';
+            pcGrid.innerHTML = '';
+
+            famososData.mobile.forEach(j => {
+                const card = document.createElement('div');
+                card.className = 'jogador-card';
+                card.innerHTML = `
+                    <div class="jogador-nome">${j.nome}</div>
+                    <div class="botoes-estilo">
+                        <div class="btn-estilo controle" data-plat="mobile" data-nome="${j.nome}" data-estilo="controle">+ Controle</div>
+                        <div class="btn-estilo capa" data-plat="mobile" data-nome="${j.nome}" data-estilo="capa">Capa</div>
+                    </div>
+                `;
+                mobileGrid.appendChild(card);
+            });
+
+            famososData.pc.forEach(j => {
+                const card = document.createElement('div');
+                card.className = 'jogador-card';
+                card.innerHTML = `
+                    <div class="jogador-nome">${j.nome}</div>
+                    <div class="botoes-estilo">
+                        <div class="btn-estilo controle" data-plat="pc" data-nome="${j.nome}" data-estilo="controle">+ Controle</div>
+                        <div class="btn-estilo capa" data-plat="pc" data-nome="${j.nome}" data-estilo="capa">Capa</div>
+                    </div>
+                `;
+                pcGrid.appendChild(card);
+            });
+
+            document.querySelectorAll('.btn-estilo').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const plataforma = this.dataset.plat;
+                    const nome = this.dataset.nome;
+                    const estilo = this.dataset.estilo;
+                    carregarFamoso(plataforma, nome, estilo);
+                });
+            });
+        }
+
+        // Navegação entre abas
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                const tabId = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active-content'));
+                document.getElementById(tabId === 'meus' ? 'tabMeus' : 'tabFamosos').classList.add('active-content');
+            });
+        });
+
+        // Navegação entre Mobile/PC na aba Famosos
+        document.querySelectorAll('.plataforma-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.plataforma-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                const plat = this.dataset.plat;
+                if (plat === 'mobile') {
+                    document.getElementById('jogadoresMobile').classList.remove('hidden');
+                    document.getElementById('jogadoresPC').classList.add('hidden');
+                } else {
+                    document.getElementById('jogadoresMobile').classList.add('hidden');
+                    document.getElementById('jogadoresPC').classList.remove('hidden');
+                }
+            });
+        });
+
+        // Inicializar
+        carregarPerfisStorage();
+        preencherFamosos();
+    </script>
+</body>
+</html>
